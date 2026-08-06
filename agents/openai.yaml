@@ -1,0 +1,4 @@
+interface:
+  display_name: "Adaptive Interview Agent"
+  short_description: "Adaptive interviews, transcript review, and next-round focus."
+  default_prompt: "Use $adaptive-interview-agent to run a role-specific interview or review an existing interview record based on the user's JD, candidate materials, interview stage, and requested style."
