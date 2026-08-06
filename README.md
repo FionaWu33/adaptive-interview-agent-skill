@@ -54,6 +54,55 @@ clarify / deepen / challenge / switch / end
 - `switch`：当前主题已经充分，转向一个与面试阶段和 JD 相关、尚未覆盖的方向。
 - `end`：本场已经合理覆盖、继续追问价值较低，或候选人主动结束时自然收束。
 
+## Information-gap-driven Tool Use 与 Memory
+
+Agent 不固定调用所有工具，而是先判断完成下一步面试决策还缺什么信息。只有缺失信息必须从外部材料或历史记录中获得时，才调用相应工具；当前上下文已经足够时直接决策。
+
+### 内部分析与决策
+
+- `analyze_jd`：提取 JD 的核心职责、明确能力要求、优先级和风险点。它本身是内部分析步骤；只有 JD 位于外部文件中时，才先使用宿主文件读取能力。
+- `evaluate_answer`：判断回答完整性、个人贡献、指标证据、因果、取舍和明确矛盾。
+- `select_next_action`：选择 `clarify / deepen / challenge / switch / end`。
+
+### 外部 Tool Use
+
+- `retrieve_resume_evidence`：按当前岗位要求检索简历和项目材料中的真实证据；已有足够证据时不检索。
+- `retrieve_past_review`：用户继续同一岗位训练，或确认使用相关历史复盘且历史与当前目标相关时，检索最近复盘和下一轮重点；当前 JD 和用户最新指令优先于历史记忆。
+- `save_session_memory`：面试结束、用户同意保存且写入能力可用时，持久化会话引用和最多 3 条下一轮重点。写入失败时明确说明未保存。
+
+工具不保存隐藏推理、人格标签或整份简历副本。
+
+```text
+当前面试目标
+        ↓
+检查已有上下文
+        ↓
+识别信息缺口
+        ↓
+按需检索 JD / 简历证据 / 历史复盘
+        ↓
+evaluate_answer
+        ↓
+clarify / deepen / challenge / switch / end
+        ↓
+生成一个主要问题
+        ↓
+结束后按需保存岗位记忆
+```
+
+Memory 分为两层：
+
+- **Working memory**：本场已问问题、已覆盖主题、待验证信息、明确矛盾和已加载证据；
+- **Long-term role memory**：同一岗位最近记录引用、最多 3 条下一轮重点和更新时间。
+
+当前 JD 和用户最新指令始终优先于历史记忆。
+
+相关规则和演示：
+
+- [Tool Use 与 Memory](references/tool-use-and-memory.md)
+- [Information-gap Tool Use Demo](examples/information-gap-tool-use-demo.md)
+- [Evaluation Report](EVALUATION.md)
+
 ## 示例
 
 问题：
@@ -95,6 +144,10 @@ Agent 判断：
 - 4 场完整会话；
 - 2 个复盘案例。
 
+另外单独覆盖：
+
+- 8 个 Tool Use 与 Memory 规则符合性案例。
+
 评测验证 Skill 指令的可执行性与规则符合性，不代表真实用户效果、统计准确率或招聘判断能力。
 
 评测报告见 [EVALUATION.md](EVALUATION.md)。
@@ -114,7 +167,7 @@ templates/
 - `SKILL.md`：Skill 的执行规则和边界。
 - `EVALUATION.md`：规则符合性评测范围、案例和结果。
 - `agents/`：宿主 Agent 的发现与元数据配置。
-- `references/`：面试阶段、动态追问和复盘规则的详细说明。
+- `references/`：面试阶段、动态追问、Tool Use 与 Memory 和复盘规则的详细说明。
 - `templates/`：会话记录和复盘的 Markdown 模板。
 
 ## 边界与限制
